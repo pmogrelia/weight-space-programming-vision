@@ -156,29 +156,3 @@ Guardrails:
 
 The test suite never calls the OpenAI API. Patch files and trained artifacts are ignored by Git by default; publish selected aggregate JSON results after reviewing them.
 
-## What makes this resume-worthy
-
-The strongest result is not necessarily a successful edit. The employable signal is the combination of:
-
-- research judgment: a falsifiable question and controlled scope;
-- ML systems work: deterministic data, checkpointing, evaluation, and experiment metadata;
-- API engineering: strict structured output and validation before mutation;
-- scientific controls: random, gradient, counterfactual, and symmetry comparisons;
-- honest communication: full seed-level results and clear failure analysis.
-
-Suggested resume bullet after results exist:
-
-> Built Weight-Space Programming for Vision, a reproducible PyTorch/OpenAI evaluation harness for sparse, gradient-free LLM edits to 6K-parameter image classifiers; benchmarked edits across counterfactual distributions, matched random controls, fine-tuning, and function-preserving network reparameterizations.
-
-Replace that sentence with measured outcomes only after completing all seeds. Do not claim improved robustness unless the aggregate results support it.
-
-## GitHub strategy
-
-Publish this as an original repository rather than only a fork; original work is clearer to recruiters. Add an experiment table, one architecture figure, a short demo GIF, and a two-page findings report after the first five-seed run. Pin the repository on your GitHub profile. If you later build on an upstream WSP harness, preserve attribution and link this repository as the vision-specific extension.
-
-## Research status
-
-Current status: implementation-complete MVP with the local baseline, gradient control, tests, and symmetry check executed successfully. The verified seed-0 base reached 96.78% correlated accuracy and 25.68% counterfactual accuracy. The OpenAI patch study remains intentionally unrun because no API key was supplied; see docs/VERIFICATION.md.
-
-The extended research design lives in PROJECT_PLAN.md. It contains worthwhile follow-on ideas, but adding CIFAR-10, more editors, an interactive tool loop, or a larger architecture before the core experiment is complete would overcomplicate this side project.
-
