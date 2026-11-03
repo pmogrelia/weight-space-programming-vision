@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wsp-vision"
+version = "0.1.0"
+description = "A reproducible MVP for weight-space programming on a shortcut-biased image classifier"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Paz Mogrelia" }]
+dependencies = [
+  "numpy>=2,<3",
+  "torch>=2.4,<3",
+]
+
+[project.optional-dependencies]
+editor = [
+  "openai>=2.0",
+  "pydantic>=2.8",
+]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.8",
+]
+
+[project.scripts]
+wsp-vision = "wsp_vision.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
