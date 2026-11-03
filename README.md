@@ -147,6 +147,7 @@ Guardrails:
 | tests | Offline schema tests and PyTorch integration tests |
 | docs/VERIFICATION.md | Executed baseline and runtime verification record |
 | MVP_EXECUTION.md | Eight-week completion plan and stop rules |
+| SCALE_BRIDGE_PLAN.md | Gated 23.8K-parameter next stage and critique record |
 | PROJECT_PLAN.md | Larger publication-oriented roadmap; explicitly not MVP scope |
 
 ## Quality checks

@@ -1,6 +1,6 @@
 # MVP Execution Plan
 
-## Definition of done
+## Stage 1 definition of done
 
 The project is complete when the public repository contains:
 
@@ -12,7 +12,7 @@ The project is complete when the public repository contains:
 6. A single aggregate table with uncertainty, API cost, runtime, and all failures.
 7. A short report that states whether the hypothesis was supported.
 
-Anything beyond that list is optional.
+Anything beyond that list is out of scope until Stage 1 is complete. The only approved next stage is the controlled scale bridge described below.
 
 ## Eight-week schedule
 
@@ -75,6 +75,20 @@ Stop rule: one prompt-format repair is acceptable; repeated prompt tuning agains
 - Publish and pin the original GitHub repository.
 - Practice explaining why the controls matter in under two minutes.
 
+## Next stage — 23.8K scale bridge
+
+After every Stage 1 completion item is satisfied, widen the same three-layer CNN from 6,164 to exactly 23,844 parameters and repeat the frozen experiment. Keep the dataset, shortcut, seeds, metrics, and semantic prompt fixed so parameter scale is the only intended change.
+
+This stage has its own entry gates, fixed and proportional patch-budget conditions, nine-call core API ceiling, symmetry subset, success thresholds, stop rules, and critique record in [SCALE_BRIDGE_PLAN.md](SCALE_BRIDGE_PLAN.md).
+
+The sequence is deliberate:
+
+1. Finish the 6K five-seed MVP.
+2. Run the 23.8K same-task scale bridge.
+3. Consider a controlled real-image benchmark only after the scale conclusion is written.
+
+Do not implement the wider network while the Stage 1 prompt or evaluation protocol is still changing.
+
 ## Scope locks
 
 Do not add these until the definition of done is met:
@@ -87,7 +101,7 @@ Do not add these until the definition of done is met:
 - hyperparameter sweeps;
 - claims of a new state of the art.
 
-The first acceptable stretch goal is one additional shortcut type on the same dataset and architecture.
+The first acceptable expansion is the 23.8K same-task scale bridge. A second shortcut, real-image dataset, or larger architecture waits until that stage is complete.
 
 ## Decision rubric
 

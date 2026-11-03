@@ -2,9 +2,9 @@
 
 ## Benchmarking LLM-Guided Diagnosis and Gradient-Free Repair of Image Classifiers
 
-**Plan version:** 1.0  
+**Plan version:** 1.1
 **Date:** November 3, 2026  
-**Target duration:** 10 weeks at 10–12 focused hours per week  
+**Target duration:** up to 12 weeks at 10–12 focused hours per week, with explicit stop gates after the 6K MVP and 23.8K scale bridge
 **Primary outcome:** A public, reproducible research repository that remains valuable whether the central hypothesis succeeds or fails.
 
 ## 1. Executive Summary
@@ -69,7 +69,11 @@ The patch preserves clean-distribution accuracy and predictions on examples outs
 
 Editor performance remains stable after function-preserving channel permutations and positive ReLU-channel rescalings. Failure of H4 is still a meaningful result: it would show coordinate dependence rather than function-level understanding.
 
-### H5 — Scaling
+### H5a — Controlled scaling
+
+Under the same task, topology, data, and editor protocol, targeted repair remains distinguishable from matched random editing when the CNN grows from 6,164 to 23,844 parameters.
+
+### H5b — Tool-mediated scaling
 
 The tool-mediated editor can transfer from a raw-text small-CNN setting to a larger classifier whose full weights do not fit naturally into the prompt.
 
@@ -98,7 +102,24 @@ The tool-mediated editor can transfer from a raw-text small-CNN setting to a lar
 
 The full weights can be serialized as text for the most constrained experiment.
 
-### 4.2 Tier B: controlled real-image benchmark
+### 4.2 Tier A2: controlled scale bridge
+
+Before changing datasets or editor interfaces, repeat the Tier A protocol with a width-scaled CNN:
+
+```text
+3×16×16
+→ Conv(16, 3×3) + ReLU
+→ Conv(32, 3×3) + ReLU
+→ Conv(64, 3×3) + ReLU
+→ global average pooling
+→ Linear(64 → 4)
+```
+
+The model has exactly 23,844 trainable parameters, approximately 3.87 times the Tier A model. The primary condition retains the fixed 64-scalar edit budget; a preregistered 256-scalar subset separates model-scale failure from shrinking editable fraction. Full protocol, gates, call ceilings, and stop rules are defined in `SCALE_BRIDGE_PLAN.md`.
+
+This stage must finish before Tier B. It isolates parameter scale while full serialization remains feasible; it does not count as real-image validation.
+
+### 4.3 Tier B: controlled real-image benchmark
 
 **Dataset:** CIFAR-10 with a controlled shortcut injected only into the training distribution.
 
@@ -112,7 +133,7 @@ Use one primary shortcut and one preregistered transfer shortcut. Do not keep tr
 
 **Model:** ResNet-20 or another compact residual CNN. The editor accesses its weights through the sandbox API rather than receiving every parameter in the prompt.
 
-### 4.3 Tier C: stretch validation
+### 4.4 Tier C: stretch validation
 
 Waterbirds with a publicly documented ResNet or ViT checkpoint. This tier is attempted only after the core study is complete and reproducible. If a ViT is used, RefineViT becomes a required comparison where protocols align.
 
@@ -293,7 +314,7 @@ weight-space-programming-for-vision/
 - checkpoint, prompt, data-config, patch, and result hashes;
 - no API keys, hidden data, or proprietary reasoning traces committed.
 
-## 9. Ten-Week Execution Plan
+## 9. Twelve-Week Execution Plan
 
 ### Week 1 — Protocol and literature
 
@@ -349,7 +370,24 @@ weight-space-programming-for-vision/
 
 **Gate:** Every transformed checkpoint passes numerical equivalence tests before editor evaluation.
 
-### Week 7 — Tier B implementation
+### Week 7 — Tier A2 implementation
+
+- Parameterize the CNN widths and checkpoint architecture manifests without changing the 6K default.
+- Implement the exact 23,844-parameter model, dynamic diagnostics, prompt accounting, and generalized symmetry tests.
+- Train and qualify five base checkpoints using only base-model metrics.
+- Freeze and tag the Tier A2 preregistration before any real editor call.
+
+**Gate:** All entry requirements in `SCALE_BRIDGE_PLAN.md` pass, and the 6K regression suite remains green.
+
+### Week 8 — Tier A2 study
+
+- Run WSP-64 and matched random controls across five checkpoints.
+- Run the two frozen symmetry conditions and two WSP-256 budget ablations.
+- Preserve every result and write the scale conclusion before changing datasets.
+
+**Gate:** The two-size result table, token/cost accounting, limitations, and all declared runs are complete.
+
+### Week 9 — Tier B implementation
 
 - Build CIFAR-10 shortcut injection and counterfactual test splits.
 - Train or reproduce compact residual checkpoints.
@@ -357,7 +395,7 @@ weight-space-programming-for-vision/
 
 **Gate:** The shortcut produces a stable, quantified worst-group failure across seeds without destroying ordinary accuracy.
 
-### Week 8 — Tier B study
+### Week 10 — Tier B study
 
 - Run the powered subset of editor and baseline conditions.
 - Test whether Tier A findings transfer.
@@ -365,7 +403,7 @@ weight-space-programming-for-vision/
 
 **Gate:** Complete blind evaluation with signed/hash-identified result artifacts.
 
-### Week 9 — Analysis and report
+### Week 11 — Analysis and report
 
 - Produce paired plots, confidence intervals, cost/quality curves, locality analysis, and edit visualizations.
 - Write a six-to-eight-page technical report with limitations and negative results.
@@ -374,7 +412,7 @@ weight-space-programming-for-vision/
 
 **Gate:** Every number in the report traces to a script-generated table or figure.
 
-### Week 10 — Portfolio polish
+### Week 12 — Portfolio polish
 
 - Build a two-minute demo showing diagnosis, submitted patch, changed tensors, and before/after predictions.
 - Add an architecture diagram, dataset card, model card, reproducibility guide, and interview FAQ.
@@ -387,11 +425,11 @@ weight-space-programming-for-vision/
 
 ### Core deliverable
 
-Tier A, symmetry tests, rigorous baselines, the audited harness, complete results, and the report. This establishes scientific validity but is not the final résumé-quality stopping point.
+Tier A, symmetry tests, rigorous baselines, the audited harness, complete results, and the report. Tier A2 becomes part of the core path only if its Stage 1 signal gate passes. A gate-triggered stop with a complete null-result report is a finished project, not an unfinished attempt.
 
-### Required résumé deliverable
+### Required deliverable for a positive practical claim
 
-Core deliverable plus a preregistered Tier B controlled real-image validation and the editor-portability comparison. The project should not be presented as finished on a résumé before this level is reached.
+Core deliverable plus the gated Tier A2 scale bridge, a preregistered Tier B controlled real-image validation, and the editor-portability comparison. Without Tier B, the repository may still be presented as a completed controlled study, but it must not claim practical transfer to real image models.
 
 ### Stretch target
 
@@ -400,6 +438,7 @@ Waterbirds or ViT validation with a relevant published editor baseline.
 ### Stop rules
 
 - Do not start Tier C before the core report is reproducible.
+- Do not start Tier B before the Tier A2 scale conclusion is frozen.
 - Do not publicly headline a synthetic-only result as evidence of practical vision-model repair.
 - If Direct-W0 cannot beat chance, continue with the preregistered direct and interactive conditions; do not rewrite the task after each failure.
 - If repair fails, analyze whether the bottleneck is diagnosis, edit construction, forward budget, symmetry, or model scale.
@@ -453,6 +492,7 @@ The negative-result bullet can be as impressive as the positive one if the evide
 | Fine-tuning dominates | WSP lacks practical value | report quality/cost/locality tradeoff, not only accuracy |
 | Proprietary model changes | Reproduction becomes unstable | log model IDs/dates; include an open-weight comparison if feasible |
 | Synthetic benchmark looks toy-like | Weak hiring signal | Tier B real-image validation and production-grade harness |
+| Wider-model failure is caused by a smaller editable fraction | Ambiguous scale conclusion | fixed 64-scalar primary condition plus preregistered 256-scalar ablation |
 | Scope expands uncontrollably | No polished deliverable | enforce core/strong/stretch gates and stop rules |
 | Prior art overlaps the claim | Credibility damage | explicit positioning against WASP, RefineViT, and weight-space learning |
 | The original authors release a general benchmark first | “Benchmark” contribution loses novelty | differentiate on vision counterfactuals, symmetry invariance, and locality; revalidate claims twice |
@@ -463,7 +503,8 @@ The negative-result bullet can be as impressive as the positive one if the evide
 The project is complete only when all core items below are verified:
 
 - [ ] Tier A dataset and counterfactual generator are deterministic and documented.
-- [ ] Tier B controlled real-image validation is complete under a frozen protocol.
+- [ ] Tier A2 evaluates the exact 23,844-parameter model under fixed and proportional patch budgets if its entry gate passes; otherwise the gate-triggered stop is documented.
+- [ ] Tier B controlled real-image validation is complete before any practical-transfer claim; otherwise it is explicitly deferred and no such claim is made.
 - [ ] Multiple independently trained checkpoints are included according to the power plan.
 - [ ] The editor sandbox enforces and audits the no-gradient protocol.
 - [ ] Required baselines and all preregistered editor conditions are executed.
@@ -487,6 +528,7 @@ The project is complete only when all core items below are verified:
 - comparing accuracy without locality, regression, or cost;
 - treating a proprietary-model result as perfectly reproducible;
 - starting with a large ViT before the benchmark and harness work;
+- jumping from the 6K synthetic model directly to CIFAR-10 without isolating parameter scale;
 - promising employment outcomes from a project title alone.
 
 This plan is designed to produce an artifact that is credible in research, ML engineering, and agent-systems interviews—not merely visually impressive on GitHub.
